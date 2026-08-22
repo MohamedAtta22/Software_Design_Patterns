@@ -1,0 +1,73 @@
+/*
+Adding More Power to
+Count Allocated Objects
+*/
+
+#include<string>
+#include<memory>
+#include<iostream>
+
+class IGameObject{
+    public:
+        virtual ~IGameObject(){}
+        virtual void Update() = 0;
+        virtual void Render() = 0;
+};
+
+class Plane : public IGameObject{
+    public:
+        Plane() {}
+        void Update() {}
+        void Render() {}
+};
+
+class Boat : public IGameObject{
+    public:
+        Boat() {}
+        void Update() {}
+        void Render() {}
+};
+
+enum class ObjectType {PLANE, BOAT};
+
+class FactoryGameObjects{
+    public:
+       static std::shared_ptr<IGameObject> CreateObject(ObjectType type){
+            if(ObjectType::PLANE == type){
+                s_plane++;
+                return std::make_shared< Plane>();
+            }
+            else if(ObjectType::BOAT == type){
+                s_boat++;
+                return std::make_shared<Boat>();
+            }
+            return nullptr;
+        }
+
+        static void PrintCounts(){
+            std::cout <<"Planes: "<<s_plane<<std::endl;
+            std::cout <<"Boats: " <<s_boat<<std::endl;
+        }
+    private:
+        FactoryGameObjects(){}
+        ~FactoryGameObjects(){}
+        FactoryGameObjects(const FactoryGameObjects& o){}
+
+        static int s_plane;
+        static int s_boat;
+};
+
+
+int FactoryGameObjects::s_plane = 0;
+int FactoryGameObjects::s_boat  = 0;
+
+int main(){
+
+    std::shared_ptr<IGameObject> myObject   = FactoryGameObjects::CreateObject(ObjectType::PLANE);
+    std::shared_ptr<IGameObject> myObject2  = FactoryGameObjects::CreateObject(ObjectType::BOAT);
+    std::shared_ptr<IGameObject> myObject3  = FactoryGameObjects::CreateObject(ObjectType::BOAT);
+
+    FactoryGameObjects::PrintCounts();
+
+    return 0;
+}
