@@ -3,7 +3,7 @@
 Navigate to program directory
 
 ```bash
-cd mike_shah/the_observer_pattern3
+cd mike_shah/the_observer_pattern4
 ```
 
 Compile with:
