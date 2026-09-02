@@ -1,35 +1,66 @@
 #include<iostream>
 #include<vector>
 
+struct Orc;
+struct Goblin;
+// Our visitor 'base class' which tells us, which
+// type of objects (Orc's, Goblin's) that we can
+// extend(i.e. visit).
+struct MonsterVisitor{
+    virtual ~MonsterVisitor() = default;
+    virtual void visit(const Orc& orc) const = 0;
+    virtual void visit(const Goblin& goblin) const = 0;
+};
+
+struct DrawMonsterVisitor : public MonsterVisitor{
+    void visit(const Orc& orc) const override{
+        std::cout<<"Drawing orc from MonsterVisitor\n";
+    }
+    void visit(const Goblin& goblin  ) const override{
+        std::cout<<"Drawing goblin from MonsterVisitor\n";
+    }
+};
+
 // Base Class
 struct Monster{
     virtual ~Monster(){}
-    virtual void sing() = 0;
+    virtual void accept(const MonsterVisitor& visitor) = 0;
 };
 
 struct Orc : public Monster{
     Orc(){std::cout<<"Orc::Orc()\n";}
-    void sing(){
-        std::cout<<"Orc::sing()\n";
+    void accept(const MonsterVisitor& visitor)override{
+        std::cout<<"Orc::accept\n";
+        visitor.visit(*this);
     }
 };
 
 struct Goblin : public Monster{
     Goblin(){std::cout<<"Goblin::Goblin()\n";}
-    void sing(){
-        std::cout<<"Goblin::sing()\n";
+    void accept(const MonsterVisitor& visitor)override{
+        std::cout<<"Goblin::accept\n";
+        visitor.visit(*this);
     }
 };
 
+
+void drawAllMonsters(const std::vector<Monster*>& monsters){
+    for(auto const& m: monsters){
+        m->accept(DrawMonsterVisitor{});
+    }
+}
 
 int main(){
     std::vector<Monster*> monsters;
     monsters.emplace_back(new Orc);
     monsters.emplace_back(new Goblin);
-    
-    for(const auto& m: monsters){
-        m->sing();
-    }
+    drawAllMonsters(monsters);
+
+    std::cout<<std::endl;
+
+    Monster* myMonster = new Orc;
+    DrawMonsterVisitor dmv;
+    myMonster->accept(dmv);
 
     return 0;
 }
